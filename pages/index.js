@@ -2,10 +2,75 @@ import Head from 'next/head'
 import Image from 'next/image'
 import { Inter } from '@next/font/google'
 import styles from '../styles/Home.module.css'
+import { useEffect, useState } from 'react'
+import {io} from 'socket.io-client';
 
 const inter = Inter({ subsets: ['latin'] })
 
+let socket;
+
+
 export default function Home() {
+
+
+  const [conversa, setConversa] = useState([]);
+  const [hasLoading, setHasLoading] = useState(false);
+  const [texto, setTexto] = useState("");
+
+
+  useEffect(()=>{
+    load()
+
+  },[])
+
+    function load(){
+    console.log("Otniel")
+
+      if (!localStorage.getItem("nome")) {
+        const nome = window.prompt("Insira seu nome:");
+        const id = window.prompt("Insira seu id:");
+        localStorage.setItem("nome", nome);
+        localStorage.setItem("id", id);
+    
+    }
+       
+    socket = io("http://127.0.0.1:5000");
+
+    socket.emit("todaConversa", ()=>{
+           
+    })
+
+    socket.on("pegaConversa", (dados)=>{
+        setConversa(dados);
+    })
+
+    socket.on("getMessage", (msg) =>{
+      console.log("antes ");
+      console.log(conversa);
+
+        setConversa(conversa.concat(msg));
+      
+        console.log("depois ");
+        console.log(conversa);
+
+    })
+    }
+      
+    function onclick(){
+        const mensagem = {
+                pessoa_nome: localStorage.getItem("nome"), 
+                id_pessoa: localStorage.getItem("id"),
+                id_mensagem: "",
+                texto: texto
+            }
+        socket.emit('message',{
+            mensagem:mensagem,
+            pessoa: localStorage.getItem("id")
+            
+        })
+    }
+
+        
   return (
     <>
       <Head>
@@ -15,108 +80,44 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.js</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
+        <div className={styles.container}>
+          <div className={styles.chat}>
+              <h1 className={styles.h1}>Chat</h1>
+              <div className={styles.conversa}>
+                {
+                  conversa.map((mensagem)=>{
+                    if (mensagem.id_pessoa == localStorage.getItem("id")) {
+                      return (
+                        <p className={styles.mensagem_direita}>{mensagem.texto} :<strong>{mensagem.pessoa_nome}</strong></p>
+                        )
+                    }
+
+                    return (
+                    <p className={styles.mensagem_esquerda}><strong>{mensagem.pessoa_nome}</strong>: {mensagem.texto}</p>
+                    )
+                  })
+                }
+
+              </div>
+
+          </div>
+
+          <div className={styles.comandos}>
+              <form className={styles.form} onSubmit={(event)=>{
+                event.preventDefault();
+                onclick();
+              }}>
+                  <input className={styles.input} type="text" onChange={(value)=>{
+                    setTexto(value.target.value);
+                  }}/>
+                  <button className={styles.button} id="botao" type="submit">Enviar</button>
+              </form>
+              
+
           </div>
         </div>
 
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
-            />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
+        
       </main>
     </>
   )
