@@ -10,6 +10,7 @@
 
 }
 
+
 .comandos{
   width: 100%;
   margin-bottom: 20px;
@@ -31,19 +32,23 @@
 }
 
 
+
 .chat{
   width: 100vw;
   display: flex;
   flex-direction: column;
+  
   margin-bottom: 20px;
-  justify-content: center;
   align-items: center;
+  overflow-y: scroll;
+
   
 }
 
 .conversa{
   width: 50%;
-  height: auto;
+  height: 90%;
+
 }
 
 .mensagem_esquerda{
@@ -58,9 +63,19 @@
   font-size: 20px;
 }
 
+.header{
+  width: 100%;
+  background-color: #131215;
+  text-align: center;
+}
+.headerHeader{
+height: 5vh;
+}
+
 .h1{
   font-size: 1.5em;
   font-weight: bold;
+
 }
 
 .form{

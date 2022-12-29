@@ -12,9 +12,7 @@ let socket;
 
 export default function Home() {
 
-
   const [conversa, setConversa] = useState([]);
-  const [hasLoading, setHasLoading] = useState(false);
   const [texto, setTexto] = useState("");
 
 
@@ -24,7 +22,6 @@ export default function Home() {
   },[])
 
     function load(){
-    console.log("Otniel")
 
       if (!localStorage.getItem("nome")) {
         const nome = window.prompt("Insira seu nome:");
@@ -79,10 +76,16 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
+      <header className={styles.headerHeader}>
+        <div className={styles.header}>
+      <h1 className={styles.h1}>Chat</h1>
+
+        </div>
+
+      </header>
       <main className={styles.main}>
         <div className={styles.container}>
           <div className={styles.chat}>
-              <h1 className={styles.h1}>Chat</h1>
               <div className={styles.conversa}>
                 {
                   conversa.map((mensagem)=>{
